@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio Kustomisasi — CV. Mecha Solution Lestari</title>
+  <meta name="description" content="Editor tampilan dan isi website CV. Mecha Solution Lestari: ubah warna, font, gambar, teks, dan visibilitas setiap bagian secara langsung." />
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/customize.css" />
+  <script>
+    /* Jika sudah login pada sesi ini, sembunyikan kunci sejak awal (hindari kedip). */
+    try { if (sessionStorage.getItem('msl-studio-auth') === '1') document.documentElement.className += ' authed'; } catch (e) {}
+  </script>
+  <style>
+    #studio-lock { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; padding: 24px;
+      background: linear-gradient(135deg, #0B1526, #1E3A8A); font-family: 'Inter', sans-serif; }
+    html.authed #studio-lock { display: none; }
+    .lock-card { background: #fff; border-radius: 18px; padding: 34px 30px; width: 100%; max-width: 380px;
+      box-shadow: 0 24px 60px rgba(0,0,0,.35); text-align: center; }
+    .lock-logo { width: 56px; height: 56px; border-radius: 14px; margin: 0 auto 14px; display: grid; place-items: center;
+      background: linear-gradient(135deg, #1D4ED8, #06B6D4); color: #fff; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .lock-card h1 { font-size: 20px; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0 0 6px; color: #0F172A; }
+    .lock-sub { font-size: 13.5px; color: #5A6B84; margin: 0 0 20px; line-height: 1.5; }
+    .lock-card label { display: block; text-align: left; font-size: 13px; font-weight: 600; color: #0F172A; margin-bottom: 14px; }
+    .lock-card input { width: 100%; margin-top: 6px; padding: 11px 13px; border: 1px solid #E3E9F2; border-radius: 10px;
+      font: inherit; font-size: 14.5px; background: #F4F7FC; box-sizing: border-box; }
+    .lock-card input:focus { outline: none; border-color: #1D4ED8; background: #fff; box-shadow: 0 0 0 3px rgba(29,78,216,.15); }
+    .lock-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: #1D4ED8; color: #fff;
+      font-weight: 700; font-size: 15px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .lock-btn:hover { background: #1E3A8A; }
+    .lock-err { color: #DC2626; font-size: 13px; margin: 12px 0 0; }
+  </style>
+</head>
+<body>
+
+  <div id="studio-lock">
+    <form class="lock-card" id="lock-form" autocomplete="off">
+      <div class="lock-logo">MS</div>
+      <h1>Studio Kustomisasi</h1>
+      <p class="lock-sub">Area khusus pemilik website. Masukkan username dan password untuk melanjutkan.</p>
+      <label>Username<input id="lock-user" type="text" autocomplete="username" required /></label>
+      <label>Password<input id="lock-pass" type="password" autocomplete="current-password" required /></label>
+      <button type="submit" class="lock-btn">Masuk</button>
+      <p class="lock-err" id="lock-err" hidden>Username atau password salah.</p>
+    </form>
+  </div>
+
+  <header class="topbar">
+    <div class="topbar-brand">
+      <span class="topbar-logo">MS</span>
+      <span>Studio Kustomisasi<small>Mecha Solution Lestari</small></span>
+    </div>
+    <div class="topbar-status">
+      <span class="status-dot" id="status-dot"></span>
+      <span id="status-text">Memuat…</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="tbtn" data-action="open">↗ Buka Website</button>
+      <button class="tbtn" data-action="export">⬇ Export</button>
+      <button class="tbtn" data-action="import">⬆ Import</button>
+      <button class="tbtn danger" data-action="reset">⟲ Reset</button>
+    </div>
+    <input type="file" id="import-file" accept="application/json,.json" hidden />
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="panel" id="panel"></main>
+    <section class="preview">
+      <div class="preview-bar">
+        <span class="hint">Pratinjau Langsung — setiap perubahan tampil seketika</span>
+        <button class="devbtn active" data-action="device" data-width="100%">Desktop</button>
+        <button class="devbtn" data-action="device" data-width="820px">Tablet</button>
+        <button class="devbtn" data-action="device" data-width="390px">Ponsel</button>
+      </div>
+      <div class="preview-stage">
+        <iframe class="preview-frame" id="preview-frame" src="index.html" title="Pratinjau website"></iframe>
+      </div>
+    </section>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/customize.js"></script>
+  <script>
+  /* Gerbang akses Studio (client-side).
+     PENTING: karena situs ini statis, kredensial terlihat di sumber halaman dan
+     kunci ini hanya menghalangi pengunjung biasa — bukan pengamanan sejati.
+     Ganti USER dan PASS di bawah sesuai keinginan pemilik. */
+  (function () {
+    var USER = 'pemilik';
+    var PASS = 'mecha2024';
+    var lock = document.getElementById('studio-lock');
+    if (document.documentElement.classList.contains('authed')) { if (lock) lock.style.display = 'none'; return; }
+    var form = document.getElementById('lock-form');
+    var err = document.getElementById('lock-err');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var u = document.getElementById('lock-user').value.trim();
+      var p = document.getElementById('lock-pass').value;
+      if (u === USER && p === PASS) {
+        try { sessionStorage.setItem('msl-studio-auth', '1'); } catch (_) {}
+        document.documentElement.className += ' authed';
+        if (lock) lock.style.display = 'none';
+      } else if (err) { err.hidden = false; }
+    });
+  })();
+  </script>
+</body>
+</html>
